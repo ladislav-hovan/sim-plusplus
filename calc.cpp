@@ -176,7 +176,6 @@ vector<Atom> generateRandomPositions(int nAtoms, double dBoxSize, double dMass, 
 void generateVelocities(vector<Atom> &vAtoms, double dTemp)
 {
 	// Velocities have a normal distribution with std = sqrt(kT/m) for each component
-	// TODO: Make sure only one PRNG exists (now there is another one in getRand())
 	//std::random_device Rand;
 	//std::mt19937 Mersenne(Rand());
 	std::mt19937 Mersenne(1992);  // For testing

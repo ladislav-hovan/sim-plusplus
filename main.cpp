@@ -19,8 +19,6 @@ int main()
 	ParamsLJ sParams;
 
 	// Initial conditions
-	// TODO: Implement loading values from a parameter file of some sort
-	// TODO: Add support for non-square boxes
 	double dBoxSize = 10.0f;  // Length of the side of the simulation box, in nm
 	int nAtoms = 100;
 	double dMass = 39.9623831225f;  // Atomic mass units (Argon-40)
@@ -30,6 +28,7 @@ int main()
 	if (dBoxSize <= 2 * sParams.cutoff)
 	{
 		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
+		std::getchar();
 		exit (1);
 	}
 
@@ -42,11 +41,9 @@ int main()
 	Atom::setBoxSize(dBoxSize);
 
 	// Place atoms randomly in the initial box
-	// TODO: Implement loading positions from a file (PDB maybe)
 	vector<Atom> vAtoms = generateRandomPositions(nAtoms, dBoxSize, dMass);
 
 	// Generate initial velocities
-	// TODO: Add an option to load velocities from a file
 	generateVelocities(vAtoms, dTemp);
 
 	// Remove center of mass motion
@@ -94,5 +91,6 @@ int main()
 	cTime = std::clock() - cTime;
 	std::cout << "\nTotal run time of the integration loop: " << double(cTime) / CLOCKS_PER_SEC << "s\n";
 
+	std::getchar();
 	return 0;
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <array>
 
 class Atom
@@ -12,38 +11,41 @@ public:
 	~Atom();
 
 	void setPos(double x, double y, double z) { m_position = { x, y, z }; }
+	void setPos(std::array<double, 3>& pos) { m_position = pos; }
 	std::array<double, 3>& getPos() { return m_position; }
 
-	void setOldForces(double fx, double fy, double fz) { m_old_forces = { fx, fy, fz }; }
-	void resetOldForces() { m_old_forces = { 0.0f, 0.0f, 0.0f }; }
-	std::array<double, 3>& getOldForces() { return m_old_forces; }
+	void setOldForce(double fx, double fy, double fz) { m_old_force = { fx, fy, fz }; }
+	void resetOldForce() { m_old_force = { 0.0f, 0.0f, 0.0f }; }
+	std::array<double, 3>& getOldForce() { return m_old_force; }
+	void makeForceOld() { m_old_force = m_force; }
 
-	void setForces(double fx, double fy, double fz) { m_forces = { fx, fy, fz }; }
-	void resetForces() { m_forces = { 0.0f, 0.0f, 0.0f }; }
-	std::array<double, 3>& getForces() { return m_forces; }
+	void setForce(double fx, double fy, double fz) { m_force = { fx, fy, fz }; }
+	void resetForce() { m_force = { 0.0f, 0.0f, 0.0f }; }
+	std::array<double, 3>& getForce() { return m_force; }
 
-	std::array<double, 3>& getVelocities() { return m_velocities; }
+	void setVelocity(std::array<double, 3>& vel) { m_velocity = vel; }
+	std::array<double, 3>& getVelocity() { return m_velocity; }
 
 	void setMass(double dMass) { m_mass = dMass; }
 	double getMass() { return m_mass; }
 
-	void updatePosition();
-	void updateVelocities();
-	void correctPosition();
+	//void updatePosition();
+	//void updateVelocities();
+	//void correctPosition();
 
 	double getKineticE();
 
-	static void setTimeStep(double dTimeStep) { s_timestep = dTimeStep; }
-	static void setBoxSize(double dBoxSize) { s_boxsize = dBoxSize; }
+	//static void setTimeStep(double dTimeStep) { s_timestep = dTimeStep; }
+	//static void setBoxSize(double dBoxSize) { s_boxsize = dBoxSize; }
 
 private:
-	double m_mass = -1.0;
+	double m_mass { -1.0f };
 	std::array<double, 3> m_position { 0.0f, 0.0f, 0.0f };
-	std::array<double, 3> m_velocities { 0.0f, 0.0f, 0.0f };
-	std::array<double, 3> m_old_forces{ 0.0f, 0.0f, 0.0f };
-	std::array<double, 3> m_forces { 0.0f, 0.0f, 0.0f };
+	std::array<double, 3> m_velocity { 0.0f, 0.0f, 0.0f };
+	std::array<double, 3> m_old_force { 0.0f, 0.0f, 0.0f };
+	std::array<double, 3> m_force { 0.0f, 0.0f, 0.0f };
 
-	// Simulation parameters, made static here
-	static double s_timestep;
-	static double s_boxsize;
+	//// Simulation parameters, made static here
+	//static double s_timestep;
+	//static double s_boxsize;
 };

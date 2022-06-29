@@ -6,86 +6,94 @@
 #include "params.h"
 #include "calc.h"
 #include "Atom.h"
+#include "Simulation.h"
 #include "output.h"
 
 using std::vector;
 
-double Atom::s_timestep = 0.0f;
-double Atom::s_boxsize = 0.0f;
+//double Atom::s_timestep = 0.0f;
+//double Atom::s_boxsize = 0.0f;
 
 int main()
 {
-	// LJ parameters, default values used for testing
-	ParamsLJ sParams;
-
-	// Initial conditions
+	// SImulation parameters
 	// TODO: Implement loading values from a parameter file of some sort
-	// TODO: Add support for non-square boxes
-	double dBoxSize = 10.0f;  // Length of the side of the simulation box, in nm
-	int nAtoms = 100;
-	double dMass = 39.9623831225f;  // Atomic mass units (Argon-40)
-	double dTemp = 20.0f;  // K
-	sParams.epsilon *= c_dKToNatural;
+	InputParams sInput;
+	
+	//// LJ parameters, default values used for testing
+	//ParamsLJ sParams;
 
-	if (dBoxSize <= 2 * sParams.cutoff)
+	//// Initial conditions
+	//
+	//// TODO: Add support for non-square boxes
+	//double dBoxSize = 10.0f;  // Length of the side of the simulation box, in nm
+	//int nAtoms = 100;
+	//double dMass = 39.9623831225f;  // Atomic mass units (Argon-40)
+	//double dTemp = 20.0f;  // K
+	//sParams.epsilon *= c_dKToNatural;
+
+	if (sInput.dBoxSize <= 2 * sInput.lj_par.cutoff)
 	{
 		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
 		exit (1);
 	}
 
-	// Run parameters
-	int nSteps = 100000;
-	double dTimeStep = 0.001f;  // ps
+	//// Run parameters
+	//int nSteps = 100000;
+	//double dTimeStep = 0.001f;  // ps
 
-	// Passing the necessary parameters to atoms
-	Atom::setTimeStep(dTimeStep);
-	Atom::setBoxSize(dBoxSize);
+	// Creating simulation object
+	Simulation Simulation;
+
+	//// Passing the necessary parameters to atoms
+	//Atom::setTimeStep(dTimeStep);
+	//Atom::setBoxSize(dBoxSize);
 
 	// Place atoms randomly in the initial box
 	// TODO: Implement loading positions from a file (PDB maybe)
-	vector<Atom> vAtoms = generateRandomPositions(nAtoms, dBoxSize, dMass);
+	// vector<Atom> vAtoms = generateRandomPositions(nAtoms, dBoxSize, dMass);
+	Simulation.generateRandomPositions();
 
 	// Generate initial velocities
 	// TODO: Add an option to load velocities from a file
-	generateVelocities(vAtoms, dTemp);
+	//generateVelocities(vAtoms, dTemp);
+	Simulation.generateVelocities();
 
 	// Remove center of mass motion
-	removeTranslation(vAtoms, true);
+	//removeTranslation(vAtoms, true);
+	Simulation.removeTranslation(true);
 
 	// Main integration loop (Velocity Verlet)
 	double dTime = 0.0f;  // ps
 	std::ofstream Energies("energies.dat");
 	std::ofstream Positions("traj.dat");
 	clock_t cTime = std::clock();
-	for (int nStep = 1; nStep <= nSteps; ++nStep, dTime += dTimeStep)
+	for (int nStep = 1; nStep <= Simulation.getMaxSteps(); ++nStep, dTime += Simulation.getTimeStep())
 	{
 		if (nStep % 1000 == 0)
 			std::cout << "Step " << nStep << "\n";
 
 		if (nStep % 100 == 0)
-			logPositions(vAtoms, Positions);
+			logPositions(Simulation.getAtoms(), Positions);
 
 		// Update the position according to Verlet algorithm
-		for (Atom &atom : vAtoms)
-		{
-			atom.updatePosition();
-			atom.correctPosition();
-		}
+		Simulation.updatePositions();
+		Simulation.correctPositions();  // Enforce PBC
 
+		// TODO: Make part of the simulation object
 		// Loop over all pairs of atoms and update forces
-		for (int nFirst = 0; nFirst < nAtoms; ++nFirst)
+		for (int nFirst = 0; nFirst < sInput.nAtoms; ++nFirst)
 		{
-			for (int nSecond = nFirst + 1; nSecond < nAtoms; ++nSecond)
-				updateForces(vAtoms[nFirst], vAtoms[nSecond], dBoxSize, sParams);
+			for (int nSecond = nFirst + 1; nSecond < sInput.nAtoms; ++nSecond)
+				updateForces(Simulation.getAtoms()[nFirst], Simulation.getAtoms()[nSecond], sInput.dBoxSize, sInput.lj_par);
 		}
 
 		// Update the velocities now
-		for (Atom &atom : vAtoms)
-			atom.updateVelocities();
+		Simulation.updateVelocities();
 
 		// Calculate the kinetic and potential energies of the system, record them
 		if (nStep % 10 == 0)
-			logEnergies(vAtoms, Energies, dBoxSize, sParams, (nStep % 1000 == 0));
+			logEnergies(Simulation.getAtoms(), Energies, sInput.dBoxSize, sInput.lj_par, (nStep % 1000 == 0));
 	}
 	Energies.close();
 	Positions.close();

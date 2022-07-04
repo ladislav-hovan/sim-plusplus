@@ -1,15 +1,5 @@
 #include "calc.h"
 
-//double getRand()
-//{
-//	//static std::random_device Rand;
-//	//static std::mt19937 Mersenne(Rand());
-//	static std::mt19937 Mersenne(1992);  // For testing
-//	static std::uniform_real_distribution<double> Distribution(0.0, 1.0);
-//
-//	return Distribution(Mersenne);
-//}
-
 double calibrateLJ(ParamsLJ &sParams)
 {
 	double dRatio = std::pow(sParams.r_m / sParams.cutoff, 6);
@@ -148,43 +138,3 @@ void removeTranslation(vector<Atom> &vAtoms, bool bReport)
 		std::cout << a_dMomentum[0] << " " << a_dMomentum[1] << " " << a_dMomentum[2] << "\n\n";
 	}
 }
-
-//vector<Atom> generateRandomPositions(int nAtoms, double dBoxSize, double dMass, double dLimit)
-//{
-//	vector<Atom> vAtoms;
-//	vAtoms.reserve(nAtoms);
-//
-//	for (int nCount = 0; nCount < nAtoms; ++nCount)
-//	{
-//		bool bAccept = false;
-//		Atom cTemp;
-//		while (!bAccept)
-//		{
-//			cTemp = Atom(dBoxSize * getRand(), dBoxSize * getRand(), dBoxSize * getRand(),
-//				dMass);
-//			bAccept = true;
-//			for (int nCheck = 0; nCheck < nCount; ++nCheck)
-//				if (getPeriodicDist(vAtoms[nCheck], cTemp, dBoxSize) < dLimit)
-//					bAccept = false;
-//		}
-//		vAtoms.push_back(cTemp);
-//	}
-//
-//	return vAtoms;
-//}
-
-//void generateVelocities(vector<Atom> &vAtoms, double dTemp)
-//{
-//	// Velocities have a normal distribution with std = sqrt(kT/m) for each component
-//	// TODO: Make sure only one PRNG exists (now there is another one in getRand())
-//	//std::random_device Rand;
-//	//std::mt19937 Mersenne(Rand());
-//	std::mt19937 Mersenne(1992);  // For testing
-//
-//	for (Atom &atom : vAtoms)
-//	{
-//		std::normal_distribution<double> Normal(0.0, std::sqrt(dTemp * Constants::KToNatural / atom.getMass()));
-//		for (int nCoord = 0; nCoord < 3; ++nCoord)
-//			atom.getVelocity()[nCoord] = Normal(Mersenne);
-//	}
-//}

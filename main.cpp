@@ -11,56 +11,30 @@
 
 using std::vector;
 
-//double Atom::s_timestep = 0.0f;
-//double Atom::s_boxsize = 0.0f;
-
 int main()
 {
-	// SImulation parameters
+	// Simulation parameters
 	// TODO: Implement loading values from a parameter file of some sort
 	InputParams sInput;
 	
-	//// LJ parameters, default values used for testing
-	//ParamsLJ sParams;
-
-	//// Initial conditions
-	//
-	//// TODO: Add support for non-square boxes
-	//double dBoxSize = 10.0f;  // Length of the side of the simulation box, in nm
-	//int nAtoms = 100;
-	//double dMass = 39.9623831225f;  // Atomic mass units (Argon-40)
-	//double dTemp = 20.0f;  // K
-	//sParams.epsilon *= c_dKToNatural;
-
 	if (sInput.dBoxSize <= 2 * sInput.lj_par.cutoff)
 	{
 		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
 		exit (1);
 	}
 
-	//// Run parameters
-	//int nSteps = 100000;
-	//double dTimeStep = 0.001f;  // ps
-
 	// Creating simulation object
 	Simulation Simulation;
 
-	//// Passing the necessary parameters to atoms
-	//Atom::setTimeStep(dTimeStep);
-	//Atom::setBoxSize(dBoxSize);
-
 	// Place atoms randomly in the initial box
 	// TODO: Implement loading positions from a file (PDB maybe)
-	// vector<Atom> vAtoms = generateRandomPositions(nAtoms, dBoxSize, dMass);
 	Simulation.generateRandomPositions();
 
 	// Generate initial velocities
 	// TODO: Add an option to load velocities from a file
-	//generateVelocities(vAtoms, dTemp);
 	Simulation.generateVelocities();
 
 	// Remove center of mass motion
-	//removeTranslation(vAtoms, true);
 	Simulation.removeTranslation(true);
 
 	// Main integration loop (Velocity Verlet)

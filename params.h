@@ -16,6 +16,7 @@ struct InputParams
 	ParamsLJ lj_par;
 
 	// Initial conditions for box and atoms
+	// TODO: Add support for non-square boxes
 	double dBoxSize = 10.0f;  // Length of the side of the simulation box, in nm
 	int nAtoms = 100;
 	double dMass = 39.9623831225f;  // Atomic mass units (Argon-40)

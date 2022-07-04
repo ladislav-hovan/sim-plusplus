@@ -10,8 +10,6 @@
 
 using std::vector;
 
-//double getRand();
-
 double getPeriodicDist(Atom &cFirst, Atom &cSecond, double dBoxSize);
 double calculateLJ(double dDist, ParamsLJ &sParams);
 void updateForces(Atom &cFirst, Atom &cSecond, double dBoxSize, ParamsLJ &sParams);
@@ -20,7 +18,4 @@ double sumPairwise(vector<double> &vdValues, int nFirst = 0, int nLast = -1);
 double sumKahan(vector<double> &vdValues);
 double sumSimple(vector<double> &vdValues);
 
-//vector<Atom> generateRandomPositions(int nAtoms, double dBoxSize, double dMass, double dLimit = 0.2);
-//void generateVelocities(vector<Atom> &vAtoms, double dTemp);
 std::array<double, 3> getTotalMomentum(vector<Atom> &vAtoms);
-//void removeTranslation(vector<Atom> &vAtoms, bool bReport = false);

@@ -29,14 +29,7 @@ public:
 	void setMass(double dMass) { m_mass = dMass; }
 	double getMass() { return m_mass; }
 
-	//void updatePosition();
-	//void updateVelocities();
-	//void correctPosition();
-
 	double getKineticE();
-
-	//static void setTimeStep(double dTimeStep) { s_timestep = dTimeStep; }
-	//static void setBoxSize(double dBoxSize) { s_boxsize = dBoxSize; }
 
 private:
 	double m_mass { -1.0f };
@@ -44,8 +37,4 @@ private:
 	std::array<double, 3> m_velocity { 0.0f, 0.0f, 0.0f };
 	std::array<double, 3> m_old_force { 0.0f, 0.0f, 0.0f };
 	std::array<double, 3> m_force { 0.0f, 0.0f, 0.0f };
-
-	//// Simulation parameters, made static here
-	//static double s_timestep;
-	//static double s_boxsize;
 };

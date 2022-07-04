@@ -1,6 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "constants.h"
+
+using std::string;
 
 struct ParamsLJ
 {
@@ -29,5 +33,7 @@ struct InputParams
 	// Random seed
 	int nSeed = -1;  // -1 means a random seed will be used
 
-	// TODO: Add names of output files
+	// Output files
+	string strEnergyFile = "energies.dat";
+	string strPositionFile = "traj.dat";
 };

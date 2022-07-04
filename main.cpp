@@ -17,6 +17,7 @@ int main()
 	// TODO: Implement loading values from a parameter file of some sort
 	InputParams sInput;
 	
+	// Check the parameters for consistency
 	if (sInput.dBoxSize <= 2 * sInput.lj_par.cutoff)
 	{
 		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
@@ -37,11 +38,17 @@ int main()
 	// Remove center of mass motion
 	Simulation.removeTranslation(true);
 
-	// Main integration loop (Velocity Verlet)
+	// Set initial simulation time
 	double dTime = 0.0f;  // ps
-	std::ofstream Energies("energies.dat");
-	std::ofstream Positions("traj.dat");
+
+	// Open log files
+	std::ofstream Energies(sInput.strEnergyFile);
+	std::ofstream Positions(sInput.strPositionFile);
+
+	// Start the timer for program run
 	clock_t cTime = std::clock();
+
+	// Main integration loop (Velocity Verlet)
 	for (int nStep = 1; nStep <= Simulation.getMaxSteps(); ++nStep, dTime += Simulation.getTimeStep())
 	{
 		if (nStep % 1000 == 0)
@@ -69,6 +76,8 @@ int main()
 		if (nStep % 10 == 0)
 			logEnergies(Simulation.getAtoms(), Energies, sInput.dBoxSize, sInput.lj_par, (nStep % 1000 == 0));
 	}
+
+	// Close the log files
 	Energies.close();
 	Positions.close();
 

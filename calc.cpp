@@ -40,23 +40,6 @@ double getSignedDiff(Atom &cFirst, Atom &cSecond, double dBoxSize, int nCoord)
 	return dDiff;
 }
 
-void updateForces(Atom &cFirst, Atom &cSecond, double dBoxSize, ParamsLJ &sParams)
-{
-	double dDist = getPeriodicDist(cFirst, cSecond, dBoxSize);
-	if (dDist > sParams.cutoff)
-		return;
-
-	double dRatio = std::pow(sParams.r_m / dDist, 6);
-	double dMagnitude = 12 * sParams.epsilon * dRatio * (1 - dRatio) / std::pow(dDist, 2);
-
-	for (int nCoord = 0; nCoord < 3; ++nCoord)
-	{
-		double dProduct = dMagnitude * getSignedDiff(cFirst, cSecond, dBoxSize, nCoord);
-		cFirst.getForce()[nCoord] += dProduct;
-		cSecond.getForce()[nCoord] -= dProduct;
-	}
-}
-
 std::array<double, 3> getTotalMomentum(vector<Atom> &vAtoms)
 {
 	std::array<double, 3> a_dMomentum = { 0.0f, 0.0f, 0.0f };
@@ -106,35 +89,4 @@ double sumSimple(vector<double> &vdValues)
 		dSum += dValue;
 
 	return dSum;
-}
-
-void removeTranslation(vector<Atom> &vAtoms, bool bReport)
-{
-	std::array<double, 3> a_dMomentum = { 0.0f, 0.0f, 0.0f };
-	double dTotalMass = 0.0f;
-	for (Atom &atom : vAtoms)
-	{
-		dTotalMass += atom.getMass();
-		for (int nCoord = 0; nCoord < 3; ++nCoord)
-			a_dMomentum[nCoord] += atom.getVelocity()[nCoord] * atom.getMass();
-	}
-
-	if (bReport)
-	{
-		std::cout << "Initial momentum vector:\n";
-		std::cout << a_dMomentum[0] << " " << a_dMomentum[1] << " " << a_dMomentum[2] << "\n";
-	}
-
-	for (double &fPart : a_dMomentum)
-		fPart /= dTotalMass;
-	for (Atom &atom : vAtoms)
-		for (int nCoord = 0; nCoord < 3; ++nCoord)
-			atom.getVelocity()[nCoord] -= a_dMomentum[nCoord];
-	
-	if (bReport)
-	{
-		a_dMomentum = getTotalMomentum(vAtoms);
-		std::cout << "\nMomentum vector after CoM motion removal:\n";
-		std::cout << a_dMomentum[0] << " " << a_dMomentum[1] << " " << a_dMomentum[2] << "\n\n";
-	}
 }

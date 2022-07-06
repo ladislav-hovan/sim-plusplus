@@ -1,12 +1,7 @@
 #include "Simulation.h"
 
-Simulation::Simulation(): m_dTimeStep{0.001f}, m_dBoxSize{10.0f}, m_nSeed{-1}
-{
-	initialisePRNG();
-}
-
 Simulation::Simulation(InputParams& sInput): m_dTimeStep{sInput.dTimeStep}, m_dBoxSize{sInput.dBoxSize}, m_nSeed{sInput.nSeed}, m_nMaxSteps{sInput.nSteps}, m_nAtoms{sInput.nAtoms},
-											 m_dMass{sInput.dMass}, m_dTemp(sInput.dTemp)
+											 m_dMass{sInput.dMass}, m_dTemp{sInput.dTemp}, m_LJPar{sInput.lj_par}
 {
 	initialisePRNG();
 }
@@ -134,6 +129,29 @@ void Simulation::updateVelocities()
 
 		cAtom.makeForceOld();
 		cAtom.resetForce();
+	}
+}
+
+void Simulation::updateForces()
+{
+	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
+	{
+		for (int nSecond = nFirst + 1; nSecond < m_nAtoms; ++nSecond)
+		{
+			double dDist = getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize);
+			if (dDist > m_LJPar.cutoff)
+				continue;
+
+			double dRatio = std::pow(m_LJPar.r_m / dDist, 6);
+			double dMagnitude = 12 * m_LJPar.epsilon * dRatio * (1 - dRatio) / std::pow(dDist, 2);
+
+			for (int nCoord = 0; nCoord < 3; ++nCoord)
+			{
+				double dProduct = dMagnitude * getSignedDiff(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize, nCoord);
+				m_vAtoms[nFirst].getForce()[nCoord] += dProduct;
+				m_vAtoms[nSecond].getForce()[nCoord] -= dProduct;
+			}
+		}
 	}
 }
 

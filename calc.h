@@ -11,6 +11,7 @@
 using std::vector;
 
 double getPeriodicDist(Atom &cFirst, Atom &cSecond, double dBoxSize);
+double getSignedDiff(Atom& cFirst, Atom& cSecond, double dBoxSize, int nCoord);
 double calculateLJ(double dDist, ParamsLJ &sParams);
 void updateForces(Atom &cFirst, Atom &cSecond, double dBoxSize, ParamsLJ &sParams);
 

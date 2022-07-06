@@ -10,7 +10,7 @@
 class Simulation
 {
 public:
-	Simulation();
+	Simulation() = delete;
 	Simulation(InputParams& sInput);
 	~Simulation();
 
@@ -28,6 +28,7 @@ public:
 
 	void updatePositions();
 	void updateVelocities();
+	void updateForces();
 	void correctPositions();
 
 private:
@@ -42,6 +43,7 @@ private:
 
 	// Atom properties
 	double m_dMass{ 39.9623831225f };  // Atomic mass units (Argon-40)
+	ParamsLJ m_LJPar{};  // All the Lennard-Jones parameters
 
 	// PRNG
 	int m_nSeed{ -1 };

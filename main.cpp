@@ -25,7 +25,7 @@ int main()
 	}
 
 	// Creating simulation object
-	Simulation Simulation;
+	Simulation Simulation(sInput);
 
 	// Place atoms randomly in the initial box
 	// TODO: Implement loading positions from a file (PDB maybe)
@@ -61,13 +61,8 @@ int main()
 		Simulation.updatePositions();
 		Simulation.correctPositions();  // Enforce PBC
 
-		// TODO: Make part of the simulation object
-		// Loop over all pairs of atoms and update forces
-		for (int nFirst = 0; nFirst < sInput.nAtoms; ++nFirst)
-		{
-			for (int nSecond = nFirst + 1; nSecond < sInput.nAtoms; ++nSecond)
-				updateForces(Simulation.getAtoms()[nFirst], Simulation.getAtoms()[nSecond], sInput.dBoxSize, sInput.lj_par);
-		}
+		// Update forces for all atoms
+		Simulation.updateForces();
 
 		// Update the velocities now
 		Simulation.updateVelocities();

@@ -39,9 +39,11 @@ int main()
 	Simulation.removeTranslation(true);
 
 	// Set initial simulation time
+	// TODO: Move into simulation
 	double dTime = 0.0f;  // ps
 
 	// Open log files
+	// TODO: Make the output streams part of a class which will be inside Simulation
 	std::ofstream Energies(sInput.strEnergyFile);
 	std::ofstream Positions(sInput.strPositionFile);
 

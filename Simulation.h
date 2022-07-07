@@ -19,9 +19,6 @@ public:
 	int getMaxSteps() { return m_nMaxSteps; };
 	vector<Atom>& getAtoms() { return m_vAtoms; };  // TODO: Adjust the program so that directly accessing atoms is not required anymore
 
-	void initialisePRNG();
-	double getRand();
-
 	void generateRandomPositions(double dLimit = 0.2);
 	void generateVelocities();
 	void removeTranslation(bool bReport = false);
@@ -48,4 +45,8 @@ private:
 	// PRNG
 	int m_nSeed{ -1 };
 	std::mt19937 m_Mersenne{};
+
+	// Private functions, not to be called from outside
+	void initialisePRNG();
+	double getRand();
 };

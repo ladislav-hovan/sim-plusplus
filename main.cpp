@@ -8,14 +8,17 @@
 #include "Atom.h"
 #include "Simulation.h"
 #include "output.h"
+#include "input.h"
 
 using std::vector;
 
-int main()
+int main(int argc, char* argv[])
 {
 	// Simulation parameters
-	// TODO: Implement loading values from a parameter file of some sort
 	InputParams sInput;
+	// Read from a parameter file if provided on the command line, else use defaults
+	if (argc > 1)
+		sInput = readParameters(argv[1]);
 	
 	// Check the parameters for consistency
 	if (sInput.dBoxSize <= 2 * sInput.lj_par.cutoff)

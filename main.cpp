@@ -1,16 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <ctime>
-#include <fstream>
-
-#include "params.h"
-#include "calc.h"
-#include "Atom.h"
-#include "Simulation.h"
-#include "output.h"
-#include "input.h"
-
-using std::vector;
+#include "main.h"
 
 int main(int argc, char* argv[])
 {

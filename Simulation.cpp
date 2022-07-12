@@ -136,8 +136,6 @@ void Simulation::updatePositions()
 		}
 
 		cAtom.setPos(adNewPosition);
-
-		// TODO: Add some check to warn against big changes in position
 	}
 }
 
@@ -159,6 +157,7 @@ void Simulation::updateVelocities()
 	}
 }
 
+// TODO: Accelerate with the use of a list of distances for all atoms
 void Simulation::updateForces()
 {
 	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)

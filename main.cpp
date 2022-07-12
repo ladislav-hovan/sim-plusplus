@@ -18,13 +18,17 @@ int main(int argc, char* argv[])
 	// Creating simulation object
 	Simulation Simulation(sInput);
 
-	// Place atoms randomly in the initial box
-	// TODO: Implement loading positions from a file (PDB maybe)
-	Simulation.generateRandomPositions();
+	// Place atoms randomly in the initial box or load initial positions from a file if provided
+	if (sInput.strPosInputFile.empty())
+		Simulation.generateRandomPositions();
+	else
+		Simulation.loadPositions(sInput.strPosInputFile);
 
-	// Generate initial velocities
-	// TODO: Add an option to load velocities from a file
-	Simulation.generateVelocities();
+	// Generate initial velocities or load them from a file if provided
+	if (sInput.strVelInputFile.empty())
+		Simulation.generateVelocities();
+	else
+		Simulation.loadVelocities(sInput.strVelInputFile);
 
 	// Remove center of mass motion
 	Simulation.removeTranslation(true);

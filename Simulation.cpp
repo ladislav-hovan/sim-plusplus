@@ -63,6 +63,33 @@ void Simulation::generateVelocities()
 	}
 }
 
+void Simulation::loadPositions(const string& strPosFile)
+{
+	vectorad vadValues = readValuesFromFile(strPosFile);
+
+	m_nAtoms = vadValues.size();
+
+	m_vAtoms.clear();
+	m_vAtoms.reserve(m_nAtoms);
+
+	for (int nCount = 0; nCount < m_nAtoms; ++nCount)
+		m_vAtoms.push_back(Atom(vadValues[nCount][0], vadValues[nCount][1], vadValues[nCount][2], m_dMass));
+}
+
+void Simulation::loadVelocities(const string& strVelFile)
+{
+	vectorad vadValues = readValuesFromFile(strVelFile);
+
+	if (vadValues.size() != m_nAtoms)
+	{
+		std::cerr << "The length of the list of velocities doesn't match the number of atoms" << std::endl;
+		exit(4);
+	}
+
+	for (int nCount = 0; nCount < m_nAtoms; ++nCount)
+		m_vAtoms[nCount].setVelocity(vadValues[nCount]);
+}
+
 void Simulation::removeTranslation(bool bReport)
 {
 	std::array<double, 3> a_dMomentum = { 0.0f, 0.0f, 0.0f };

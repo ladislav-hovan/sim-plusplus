@@ -44,6 +44,8 @@ void assignInput(string &strLine, InputParams &sParams)
 	// Assigning strings, simple
 	if (!strFirstInput.compare("EnergyFile"))			sParams.strEnergyFile = strSecondInput;
 	if (!strFirstInput.compare("PositionFile"))			sParams.strPositionFile = strSecondInput;
+	if (!strFirstInput.compare("PosInputFile"))			sParams.strPosInputFile = strSecondInput;
+	if (!strFirstInput.compare("VelInputFile"))			sParams.strVelInputFile = strSecondInput;
 
 	// Assigning integers
 	if (!strFirstInput.compare("Seed"))					sParams.nSeed = std::stoi(strSecondInput);
@@ -90,4 +92,38 @@ InputParams readParameters(const string &strFilename)
 	}
 
 	return sParams;
+}
+
+vectorad readValuesFromFile(const string& strFile)
+{
+	vectorad vadValues;
+
+	std::ifstream InputStream(strFile);
+
+	if (!InputStream)
+	{
+		std::cerr << "Couldn't open file " << strFile << std::endl;
+		exit(2);
+	}
+
+	while (InputStream)
+	{
+		string strLine;
+		getline(InputStream, strLine);
+
+		// Ignore empty lines
+		if (isEmpty(strLine))
+			continue;
+
+		array<double, 3> adTemp{0, 0, 0};
+
+		std::stringstream LineStream(strLine);
+
+		for (int nPos = 0; nPos < 3; ++nPos)
+			LineStream >> adTemp[nPos];
+
+		vadValues.push_back(adTemp);
+	}
+
+	return vadValues;
 }

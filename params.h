@@ -36,4 +36,8 @@ struct InputParams
 	// Output files
 	string strEnergyFile = "energies.dat";
 	string strPositionFile = "traj.dat";
+
+	// Input files
+	string strPosInputFile = "";
+	string strVelInputFile = "";
 };

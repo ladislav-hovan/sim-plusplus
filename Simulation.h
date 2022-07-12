@@ -6,6 +6,10 @@
 #include "Atom.h"
 #include "params.h"
 #include "calc.h"
+#include "input.h"
+
+using std::vector;
+using vectorad = vector<array<double, 3> >;
 
 class Simulation
 {
@@ -21,6 +25,8 @@ public:
 
 	void generateRandomPositions(double dLimit = 0.2);
 	void generateVelocities();
+	void loadPositions(const string &strPosFile);
+	void loadVelocities(const string& strVelFile);
 	void removeTranslation(bool bReport = false);
 
 	void updatePositions();
@@ -29,7 +35,7 @@ public:
 	void correctPositions();
 
 private:
-	std::vector<Atom> m_vAtoms{};
+	vector<Atom> m_vAtoms{};
 
 	// Simulation parameters
 	double m_dTimeStep{ 0.001f };  // ps

@@ -1,21 +1,12 @@
-#include <iostream>
-#include <vector>
-#include <ctime>
-#include <fstream>
+#include "main.h"
 
-#include "params.h"
-#include "calc.h"
-#include "Atom.h"
-#include "Simulation.h"
-#include "output.h"
-
-using std::vector;
-
-int main()
+int main(int argc, char* argv[])
 {
 	// Simulation parameters
-	// TODO: Implement loading values from a parameter file of some sort
 	InputParams sInput;
+	// Read from a parameter file if provided on the command line, else use defaults
+	if (argc > 1)
+		sInput = readParameters(argv[1]);
 	
 	// Check the parameters for consistency
 	if (sInput.dBoxSize <= 2 * sInput.lj_par.cutoff)
@@ -27,13 +18,17 @@ int main()
 	// Creating simulation object
 	Simulation Simulation(sInput);
 
-	// Place atoms randomly in the initial box
-	// TODO: Implement loading positions from a file (PDB maybe)
-	Simulation.generateRandomPositions();
+	// Place atoms randomly in the initial box or load initial positions from a file if provided
+	if (sInput.strPosInputFile.empty())
+		Simulation.generateRandomPositions();
+	else
+		Simulation.loadPositions(sInput.strPosInputFile);
 
-	// Generate initial velocities
-	// TODO: Add an option to load velocities from a file
-	Simulation.generateVelocities();
+	// Generate initial velocities or load them from a file if provided
+	if (sInput.strVelInputFile.empty())
+		Simulation.generateVelocities();
+	else
+		Simulation.loadVelocities(sInput.strVelInputFile);
 
 	// Remove center of mass motion
 	Simulation.removeTranslation(true);

@@ -11,19 +11,15 @@
 using std::vector;
 using std::string;
 
-void logEnergies(vector<Atom> &vAtoms, std::ofstream &Output, double dBoxSize,
-	ParamsLJ &sParams, bool bPrint = false);
-void logPositions(vector<Atom> &vAtoms, std::ofstream &Output);
-
 class Output
 {
 public:
 	Output() = delete;
-	Output(string strEnergyFile, string strPositionFile);
+	Output(const string &strEnergyFile, const string &strPositionFile);
 	~Output();
 
-	void logEnergies(vector<Atom>& vAtoms, double dBoxSize, ParamsLJ& sParams, bool bPrint = false);
-	void logPositions(vector<Atom>& vAtoms);
+	void logEnergies(vector<Atom> &vAtoms, double dBoxSize, ParamsLJ& sParams, bool bPrint = false);
+	void logPositions(vector<Atom> &vAtoms);
 
 private:
 	std::ofstream m_EnergyOutput;

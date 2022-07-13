@@ -1,7 +1,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation(InputParams& sInput): m_dTimeStep{sInput.dTimeStep}, m_dBoxSize{sInput.dBoxSize}, m_nSeed{sInput.nSeed}, m_nMaxSteps{sInput.nSteps}, m_nAtoms{sInput.nAtoms},
-											 m_dMass{sInput.dMass}, m_dTemp{sInput.dTemp}, m_LJPar{sInput.lj_par}
+											 m_dMass{sInput.dMass}, m_dTemp{sInput.dTemp}, m_LJPar{sInput.lj_par}, m_Output{sInput.strEnergyFile, sInput.strPositionFile}
 {
 	initialisePRNG();
 }

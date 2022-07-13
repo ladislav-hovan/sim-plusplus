@@ -37,11 +37,6 @@ int main(int argc, char* argv[])
 	// TODO: Move into simulation
 	double dTime = 0.0f;  // ps
 
-	// Open log files
-	// TODO: Make the output streams part of a class which will be inside Simulation
-	std::ofstream Energies(sInput.strEnergyFile);
-	std::ofstream Positions(sInput.strPositionFile);
-
 	// Start the timer for program run
 	clock_t cTime = std::clock();
 
@@ -52,7 +47,7 @@ int main(int argc, char* argv[])
 			std::cout << "Step " << nStep << "\n";
 
 		if (nStep % 100 == 0)
-			logPositions(Simulation.getAtoms(), Positions);
+			Simulation.logPositions();
 
 		// Update the position according to Verlet algorithm
 		Simulation.updatePositions();
@@ -66,12 +61,8 @@ int main(int argc, char* argv[])
 
 		// Calculate the kinetic and potential energies of the system, record them
 		if (nStep % 10 == 0)
-			logEnergies(Simulation.getAtoms(), Energies, sInput.dBoxSize, sInput.lj_par, (nStep % 1000 == 0));
+			Simulation.logEnergies(nStep % 1000 == 0);
 	}
-
-	// Close the log files
-	Energies.close();
-	Positions.close();
 
 	// Report on time spent
 	cTime = std::clock() - cTime;

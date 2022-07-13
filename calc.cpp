@@ -12,11 +12,11 @@ double calculateLJ(double dDist, ParamsLJ &sParams)
 	if (dDist >= sParams.cutoff)
 		return 0.0;
 
-	static double dOffset = calibrateLJ(sParams);
+	static double s_dOffset = calibrateLJ(sParams);
 
 	double dRatio = std::pow(sParams.r_m / dDist, 6);
 
-	return sParams.epsilon * dRatio * (dRatio - 2) - dOffset;
+	return sParams.epsilon * dRatio * (dRatio - 2) - s_dOffset;
 }
 
 double getPeriodicDist(Atom &cFirst, Atom &cSecond, double dBoxSize)

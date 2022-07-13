@@ -7,6 +7,7 @@
 #include "params.h"
 #include "calc.h"
 #include "input.h"
+#include "Output.h"
 
 using std::vector;
 using vectorad = vector<array<double, 3> >;
@@ -18,10 +19,9 @@ public:
 	Simulation(InputParams& sInput);
 	~Simulation();
 
-	double getTimeStep() { return m_dTimeStep; };
-	double getBoxSize() { return m_dBoxSize; };
-	int getMaxSteps() { return m_nMaxSteps; };
-	vector<Atom>& getAtoms() { return m_vAtoms; };  // TODO: Adjust the program so that directly accessing atoms is not required anymore
+	double getTimeStep() { return m_dTimeStep; }
+	double getBoxSize() { return m_dBoxSize; }
+	int getMaxSteps() { return m_nMaxSteps; }
 
 	void generateRandomPositions(double dLimit = 0.2);
 	void generateVelocities();
@@ -34,8 +34,13 @@ public:
 	void updateForces();
 	void correctPositions();
 
+	void logEnergies(bool bPrint = false) { m_Output.logEnergies(m_vAtoms, m_dBoxSize, m_LJPar, bPrint); }
+	void logPositions() { m_Output.logPositions(m_vAtoms); }
+
 private:
 	vector<Atom> m_vAtoms{};
+
+	Output m_Output;
 
 	// Simulation parameters
 	double m_dTimeStep{ 0.001f };  // ps

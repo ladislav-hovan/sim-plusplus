@@ -33,26 +33,18 @@ int main(int argc, char* argv[])
 	// Remove center of mass motion
 	Simulation.removeTranslation(true);
 
-	// Set initial simulation time
-	// TODO: Move into simulation
-	double dTime = 0.0f;  // ps
-
-	// Open log files
-	// TODO: Make the output streams part of a class which will be inside Simulation
-	std::ofstream Energies(sInput.strEnergyFile);
-	std::ofstream Positions(sInput.strPositionFile);
-
 	// Start the timer for program run
 	clock_t cTime = std::clock();
 
 	// Main integration loop (Velocity Verlet)
-	for (int nStep = 1; nStep <= Simulation.getMaxSteps(); ++nStep, dTime += Simulation.getTimeStep())
+	// The initial time and step are set by the Simulation constructor
+	for (; !Simulation.isFinished(); Simulation.advanceTime())
 	{
-		if (nStep % 1000 == 0)
-			std::cout << "Step " << nStep << "\n";
+		if (Simulation.getStep() % 1000 == 0)
+			std::cout << "Step " << Simulation.getStep() << "\n";
 
-		if (nStep % 100 == 0)
-			logPositions(Simulation.getAtoms(), Positions);
+		if (Simulation.getStep() % 100 == 0)
+			Simulation.logPositions();
 
 		// Update the position according to Verlet algorithm
 		Simulation.updatePositions();
@@ -65,13 +57,9 @@ int main(int argc, char* argv[])
 		Simulation.updateVelocities();
 
 		// Calculate the kinetic and potential energies of the system, record them
-		if (nStep % 10 == 0)
-			logEnergies(Simulation.getAtoms(), Energies, sInput.dBoxSize, sInput.lj_par, (nStep % 1000 == 0));
+		if (Simulation.getStep() % 10 == 0)
+			Simulation.logEnergies(Simulation.getStep() % 1000 == 0);
 	}
-
-	// Close the log files
-	Energies.close();
-	Positions.close();
 
 	// Report on time spent
 	cTime = std::clock() - cTime;

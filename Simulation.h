@@ -26,7 +26,7 @@ public:
 	void generateRandomPositions(double dLimit = 0.2);
 	void generateVelocities();
 	void loadPositions(const string &strPosFile);
-	void loadVelocities(const string& strVelFile);
+	void loadVelocities(const string &strVelFile);
 	void removeTranslation(bool bReport = false);
 
 	void updatePositions();
@@ -36,6 +36,13 @@ public:
 
 	void logEnergies(bool bPrint = false) { m_Output.logEnergies(m_vAtoms, m_dBoxSize, m_LJPar, bPrint); }
 	void logPositions() { m_Output.logPositions(m_vAtoms); }
+
+	void advanceTime() { m_nStep += 1; m_dTime += m_dTimeStep; }
+	bool isFinished() { return m_nStep > m_nMaxSteps; }
+
+	void setTime(double dTime) { m_dTime = dTime; }
+	void setStep(int nStep) { m_nStep = nStep; }
+	int getStep() { return m_nStep; }
 
 private:
 	vector<Atom> m_vAtoms{};
@@ -52,6 +59,10 @@ private:
 	// Atom properties
 	double m_dMass{ 39.9623831225f };  // Atomic mass units (Argon-40)
 	ParamsLJ m_LJPar{};  // All the Lennard-Jones parameters
+
+	// Current state of simulation
+	double m_dTime{ 0.0f };  // ps
+	int m_nStep{ 1 };
 
 	// PRNG
 	int m_nSeed{ -1 };

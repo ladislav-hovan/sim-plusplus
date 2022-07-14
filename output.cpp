@@ -12,6 +12,7 @@ Output::~Output()
 	m_PositionOutput.close();
 }
 
+// TODO: The energy vectors should be permanent, possibly outside of output class (for virial and stuff)
 void Output::logEnergies(vector<Atom> &vAtoms, double dBoxSize, ParamsLJ &sParams, bool bPrint)
 {
 	vector<double> vdKineticE;

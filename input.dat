@@ -1,4 +1,4 @@
-MaxSteps = 10000
+MaxSteps = 50000
 
 PosInputFile = init_pos.dat
 VelInputFile = init_vel.dat

@@ -29,6 +29,8 @@ struct InputParams
 	int nSteps = 100000;
 	double dTimeStep = 0.001f;  // ps
 	double dTemp = 20.0f;  // K, only used for velocity generation right now
+	int nInitialStep = 1;
+	double dInitialTime = 0.0f;  // ps
 
 	// Random seed
 	int nSeed = -1;  // -1 means a random seed will be used

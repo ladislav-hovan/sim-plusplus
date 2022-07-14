@@ -51,6 +51,7 @@ void assignInput(string &strLine, InputParams &sParams)
 	if (!strFirstInput.compare("Seed"))					sParams.nSeed = std::stoi(strSecondInput);
 	if (!strFirstInput.compare("MaxSteps"))				sParams.nSteps = std::stoi(strSecondInput);
 	if (!strFirstInput.compare("NumAtoms"))				sParams.nAtoms = std::stoi(strSecondInput);
+	if (!strFirstInput.compare("InitialStep"))			sParams.nInitialStep = std::stoi(strSecondInput);
 
 	// Assigning doubles
 	if (!strFirstInput.compare("LJ_Epsilon"))			sParams.lj_par.epsilon = std::stod(strSecondInput);
@@ -60,6 +61,7 @@ void assignInput(string &strLine, InputParams &sParams)
 	if (!strFirstInput.compare("BoxSize"))				sParams.dBoxSize = std::stod(strSecondInput);
 	if (!strFirstInput.compare("Mass"))					sParams.dMass = std::stod(strSecondInput);
 	if (!strFirstInput.compare("TimeStep"))				sParams.dTimeStep = std::stod(strSecondInput);
+	if (!strFirstInput.compare("InitialTime"))			sParams.dInitialTime = std::stod(strSecondInput);
 }
 
 InputParams readParameters(const string &strFilename)

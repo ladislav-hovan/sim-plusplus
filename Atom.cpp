@@ -20,10 +20,11 @@ Atom::Atom(double x, double y, double z, double mass)
 	m_mass = mass;
 }
 
-double Atom::getKineticE()
+double Atom::getKineticE() const
 {
 	// In natural units
 	double dSquaredVels = 0.0;
+
 	for (auto &vel : m_velocity)
 		dSquaredVels += std::pow(vel, 2);
 

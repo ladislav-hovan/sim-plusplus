@@ -51,6 +51,8 @@ void Simulation::generateRandomPositions(double dLimit)
 		}
 		m_vAtoms.push_back(cTemp);
 	}
+
+	initialiseDistances();
 }
 
 void Simulation::generateVelocities()
@@ -75,6 +77,8 @@ void Simulation::loadPositions(const string& strPosFile)
 
 	for (int nCount = 0; nCount < m_nAtoms; ++nCount)
 		m_vAtoms.push_back(Atom(vadValues[nCount][0], vadValues[nCount][1], vadValues[nCount][2], m_dMass));
+
+	initialiseDistances();
 }
 
 void Simulation::loadVelocities(const string& strVelFile)
@@ -126,46 +130,45 @@ void Simulation::updatePositions()
 {
 	for (Atom &cAtom : m_vAtoms)
 	{
-		std::array<double, 3> adNewPosition = cAtom.getPos();
-		std::array<double, 3> adVelocity = cAtom.getVelocity();
-		std::array<double, 3> adOldForce = cAtom.getOldForce();
+		std::array<double, 3> &adPosition = cAtom.getPos();
+		const std::array<double, 3> &adVelocity = cAtom.getVelocity();
+		const std::array<double, 3> &adOldForce = cAtom.getOldForce();
+
+		const static double s_dTimeStepSquared = std::pow(m_dTimeStep, 2);
+		double dFactor = s_dTimeStepSquared / (2 * cAtom.getMass());
 
 		for (int nCoord = 0; nCoord < 3; ++nCoord)
-		{
-			adNewPosition[nCoord] += adVelocity[nCoord] * m_dTimeStep;
-			adNewPosition[nCoord] += adOldForce[nCoord] * std::pow(m_dTimeStep, 2) / (2 * cAtom.getMass());
-		}
-
-		cAtom.setPos(adNewPosition);
+			adPosition[nCoord] += adVelocity[nCoord] * m_dTimeStep + adOldForce[nCoord] * dFactor;
 	}
+
+	updateDistances();
 }
 
 void Simulation::updateVelocities()
 {
 	for (Atom &cAtom : m_vAtoms)
 	{
-		std::array<double, 3> adNewVelocity = cAtom.getVelocity();
-		std::array<double, 3> adOldForce = cAtom.getOldForce();
-		std::array<double, 3> adForce = cAtom.getForce();
+		std::array<double, 3> &adVelocity = cAtom.getVelocity();
+		const std::array<double, 3> &adOldForce = cAtom.getOldForce();
+		const std::array<double, 3> &adForce = cAtom.getForce();
+
+		double dFactor = m_dTimeStep / (2 * cAtom.getMass());
 
 		for (int nCoord = 0; nCoord < 3; ++nCoord)
-			adNewVelocity[nCoord] += (adOldForce[nCoord] + adForce[nCoord]) * m_dTimeStep / (2 * cAtom.getMass());
-
-		cAtom.setVelocity(adNewVelocity);
+			adVelocity[nCoord] += (adOldForce[nCoord] + adForce[nCoord]) * dFactor;
 
 		cAtom.makeForceOld();
 		cAtom.resetForce();
 	}
 }
 
-// TODO: Accelerate with the use of a list of distances for all atoms
 void Simulation::updateForces()
 {
 	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
 	{
 		for (int nSecond = nFirst + 1; nSecond < m_nAtoms; ++nSecond)
 		{
-			double dDist = getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize);
+			double dDist = m_vvdDistances[nFirst][nSecond];
 			if (dDist > m_LJPar.cutoff)
 				continue;
 
@@ -197,5 +200,34 @@ void Simulation::correctPositions()
 		}
 
 		cAtom.setPos(adCorrectedPosition);
+	}
+
+	// This function doesn't affect periodic distances so no need to update them
+}
+
+void Simulation::initialiseDistances()
+{
+	m_vvdDistances.clear();
+	m_vvdDistances.reserve(m_nAtoms);
+
+	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
+	{
+		m_vvdDistances.emplace_back();
+		m_vvdDistances.back().reserve(m_nAtoms);
+
+		for (int nSecond = 0; nSecond < m_nAtoms; ++nSecond)
+			if (nFirst >= nSecond)
+				m_vvdDistances.back().push_back(0.0f);
+			else
+				m_vvdDistances.back().push_back(getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize));
+	}
+}
+
+void Simulation::updateDistances()
+{
+	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
+	{
+		for (int nSecond = nFirst + 1; nSecond < m_nAtoms; ++nSecond)
+			m_vvdDistances[nFirst][nSecond] = getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize);
 	}
 }

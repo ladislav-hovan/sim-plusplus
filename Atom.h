@@ -14,7 +14,8 @@ public:
 
 	void setPos(double x, double y, double z) { m_position = { x, y, z }; }
 	void setPos(std::array<double, 3>& pos) { m_position = pos; }
-	array<double, 3>& getPos() { return m_position; }
+	array<double, 3> &getPos() { return m_position; }
+	const array<double, 3> &getPos() const { return m_position; }
 
 	void setOldForce(double fx, double fy, double fz) { m_old_force = { fx, fy, fz }; }
 	void resetOldForce() { m_old_force = { 0.0f, 0.0f, 0.0f }; }
@@ -27,11 +28,12 @@ public:
 
 	void setVelocity(std::array<double, 3>& vel) { m_velocity = vel; }
 	array<double, 3>& getVelocity() { return m_velocity; }
+	const array<double, 3>& getVelocity() const { return m_velocity; }
 
 	void setMass(double dMass) { m_mass = dMass; }
-	double getMass() { return m_mass; }
+	double getMass() const { return m_mass; }
 
-	double getKineticE();
+	double getKineticE() const;
 
 private:
 	double m_mass { -1.0f };

@@ -10,7 +10,8 @@
 #include "Output.h"
 
 using std::vector;
-using vectorad = vector<array<double, 3> >;
+using vectorad = vector< array<double, 3> >;
+using vector2d = vector< vector<double> >;
 
 class Simulation
 {
@@ -34,7 +35,7 @@ public:
 	void updateForces();
 	void correctPositions();
 
-	void logEnergies(bool bPrint = false) { m_Output.logEnergies(m_vAtoms, m_dBoxSize, m_LJPar, bPrint); }
+	void logEnergies(bool bPrint = false) { m_Output.logEnergies(m_vAtoms, m_vvdDistances, m_dBoxSize, m_LJPar, bPrint); }
 	void logPositions() { m_Output.logPositions(m_vAtoms); }
 
 	void advanceTime() { m_nStep += 1; m_dTime += m_dTimeStep; }
@@ -44,8 +45,12 @@ public:
 	void setStep(int nStep) { m_nStep = nStep; }
 	int getStep() { return m_nStep; }
 
+	void updateDistances();
+
 private:
 	vector<Atom> m_vAtoms{};
+
+	vector2d m_vvdDistances{};
 
 	Output m_Output;
 
@@ -71,4 +76,5 @@ private:
 	// Private functions, not to be called from outside
 	void initialisePRNG();
 	double getRand();
+	void initialiseDistances();
 };

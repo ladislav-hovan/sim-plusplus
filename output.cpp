@@ -13,7 +13,7 @@ Output::~Output()
 }
 
 // TODO: The energy vectors should be permanent, possibly outside of output class (for virial and stuff)
-void Output::logEnergies(vector<Atom> &vAtoms, double dBoxSize, ParamsLJ &sParams, bool bPrint)
+void Output::logEnergies(vector<Atom> &vAtoms, vector2d &vvdDistances, double dBoxSize, ParamsLJ &sParams, bool bPrint)
 {
 	vector<double> vdKineticE;
 	vdKineticE.reserve(vAtoms.size());
@@ -22,11 +22,11 @@ void Output::logEnergies(vector<Atom> &vAtoms, double dBoxSize, ParamsLJ &sParam
 	double dKinetic = sumPairwise(vdKineticE);
 
 	vector<double> vdPotentialE;
-	vdPotentialE.reserve(vAtoms.size());
+	vdPotentialE.reserve(std::pow(vAtoms.size(), 2));
 	for (unsigned int nFirst = 0; nFirst < vAtoms.size(); ++nFirst)
 	{
 		for (unsigned int nSecond = nFirst + 1; nSecond < vAtoms.size(); ++nSecond)
-			vdPotentialE.push_back(calculateLJ(getPeriodicDist(vAtoms[nFirst], vAtoms[nSecond], dBoxSize), sParams));
+			vdPotentialE.push_back(calculateLJ(vvdDistances[nFirst][nSecond], sParams));
 	}
 	double dPotential = sumPairwise(vdPotentialE);
 

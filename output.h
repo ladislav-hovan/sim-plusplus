@@ -10,6 +10,7 @@
 
 using std::vector;
 using std::string;
+using vector2d = vector< vector<double> >;
 
 class Output
 {
@@ -18,7 +19,7 @@ public:
 	Output(const string &strEnergyFile, const string &strPositionFile);
 	~Output();
 
-	void logEnergies(vector<Atom> &vAtoms, double dBoxSize, ParamsLJ& sParams, bool bPrint = false);
+	void logEnergies(vector<Atom> &vAtoms, vector2d &vvdDistances, double dBoxSize, ParamsLJ& sParams, bool bPrint = false);
 	void logPositions(vector<Atom> &vAtoms);
 
 private:

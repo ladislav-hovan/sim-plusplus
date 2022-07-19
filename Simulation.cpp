@@ -52,7 +52,8 @@ void Simulation::generateRandomPositions(double dLimit)
 		m_vAtoms.push_back(cTemp);
 	}
 
-	initialiseDistances();
+	initialiseDistancesAndForces();
+	initialiseEnergyVectors();
 }
 
 void Simulation::generateVelocities()
@@ -78,7 +79,8 @@ void Simulation::loadPositions(const string& strPosFile)
 	for (int nCount = 0; nCount < m_nAtoms; ++nCount)
 		m_vAtoms.push_back(Atom(vadValues[nCount][0], vadValues[nCount][1], vadValues[nCount][2], m_dMass));
 
-	initialiseDistances();
+	initialiseDistancesAndForces();
+	initialiseEnergyVectors();
 }
 
 void Simulation::loadVelocities(const string& strVelFile)
@@ -166,7 +168,7 @@ void Simulation::updateForces()
 {
 	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
 	{
-		for (int nSecond = nFirst + 1; nSecond < m_nAtoms; ++nSecond)
+		for (int nSecond = 0; nSecond < nFirst; ++nSecond)
 		{
 			double dDist = m_vvdDistances[nFirst][nSecond];
 			if (dDist > m_LJPar.cutoff)
@@ -213,13 +215,10 @@ void Simulation::initialiseDistances()
 	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
 	{
 		m_vvdDistances.emplace_back();
-		m_vvdDistances.back().reserve(m_nAtoms);
+		m_vvdDistances.back().reserve(nFirst);
 
-		for (int nSecond = 0; nSecond < m_nAtoms; ++nSecond)
-			if (nFirst >= nSecond)
-				m_vvdDistances.back().push_back(0.0f);
-			else
-				m_vvdDistances.back().push_back(getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize));
+		for (int nSecond = 0; nSecond < nFirst; ++nSecond)
+			m_vvdDistances.back().push_back(getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize));
 	}
 }
 
@@ -227,7 +226,62 @@ void Simulation::updateDistances()
 {
 	for (int nFirst = 0; nFirst < m_nAtoms; ++nFirst)
 	{
-		for (int nSecond = nFirst + 1; nSecond < m_nAtoms; ++nSecond)
+		for (int nSecond = 0; nSecond < nFirst; ++nSecond)
 			m_vvdDistances[nFirst][nSecond] = getPeriodicDist(m_vAtoms[nFirst], m_vAtoms[nSecond], m_dBoxSize);
 	}
+}
+
+void Simulation::calculateEnergies()
+{
+	calculatePotentialE();
+	calculateKineticE();
+}
+
+void Simulation::copyForcesToOld()
+{
+	// Only used during initialisation to set initial forces
+	for (Atom& cAtom : m_vAtoms)
+		cAtom.setOldForce(cAtom.getForce());
+}
+
+void Simulation::resetForces()
+{
+	// Only used during initialisation, afterwards updateVelocities() is responsible
+	for (Atom& cAtom : m_vAtoms)
+		cAtom.resetForce();
+}
+
+void Simulation::initialiseDistancesAndForces()
+{
+	initialiseDistances();
+	updateForces();
+	copyForcesToOld();
+	resetForces();
+}
+
+void Simulation::initialiseEnergyVectors()
+{
+	m_vdKineticE.resize(m_nAtoms);
+
+	int nPairs = m_nAtoms * (m_nAtoms - 1) / 2;
+	m_vdPotentialE.resize(nPairs);
+}
+
+void Simulation::calculatePotentialE()
+{
+	for (unsigned int nFirst = 0, nPos = 0; nFirst < m_vAtoms.size(); ++nFirst)
+	{
+		for (unsigned int nSecond = 0; nSecond < nFirst; ++nSecond, ++nPos)
+			m_vdPotentialE[nPos] = calculateLJ(m_vvdDistances[nFirst][nSecond], m_LJPar);
+	}
+
+	m_dPotentialE = sumPairwise(m_vdPotentialE);
+}
+
+void Simulation::calculateKineticE()
+{
+	for (int nPos = 0; nPos < m_vAtoms.size(); ++nPos)
+		m_vdKineticE[nPos] = m_vAtoms[nPos].getKineticE();
+
+	m_dKineticE = sumPairwise(m_vdKineticE);
 }

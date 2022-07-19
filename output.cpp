@@ -12,24 +12,9 @@ Output::~Output()
 	m_PositionOutput.close();
 }
 
-// TODO: The energy vectors should be permanent, possibly outside of output class (for virial and stuff)
-void Output::logEnergies(vector<Atom> &vAtoms, vector2d &vvdDistances, double dBoxSize, ParamsLJ &sParams, bool bPrint)
+void Output::logEnergies(double dKinetic, double dPotential, bool bPrint)
 {
-	vector<double> vdKineticE;
-	vdKineticE.reserve(vAtoms.size());
-	for (Atom& atom : vAtoms)
-		vdKineticE.push_back(atom.getKineticE());
-	double dKinetic = sumPairwise(vdKineticE);
-
-	vector<double> vdPotentialE;
-	vdPotentialE.reserve(std::pow(vAtoms.size(), 2));
-	for (unsigned int nFirst = 0; nFirst < vAtoms.size(); ++nFirst)
-	{
-		for (unsigned int nSecond = nFirst + 1; nSecond < vAtoms.size(); ++nSecond)
-			vdPotentialE.push_back(calculateLJ(vvdDistances[nFirst][nSecond], sParams));
-	}
-	double dPotential = sumPairwise(vdPotentialE);
-
+	// Reporting to file and optionally to standard output
 	m_EnergyOutput << dKinetic << " " << dPotential << " " << dKinetic + dPotential << "\n";
 
 	if (bPrint)
@@ -39,12 +24,13 @@ void Output::logEnergies(vector<Atom> &vAtoms, vector2d &vvdDistances, double dB
 	}
 }
 
-void Output::logPositions(vector<Atom> &vAtoms)
+void Output::logPositions(const vector<Atom> &vAtoms)
 {
-	for (Atom& atom : vAtoms)
+	for (const Atom &cAtom : vAtoms)
 	{
-		for (double fCoord : atom.getPos())
-			m_PositionOutput << fCoord << " ";
+		for (double dCoord : cAtom.getPos())
+			m_PositionOutput << dCoord << " ";
+
 		m_PositionOutput << "\n";
 	}
 

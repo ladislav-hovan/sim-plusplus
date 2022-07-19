@@ -19,8 +19,8 @@ public:
 	Output(const string &strEnergyFile, const string &strPositionFile);
 	~Output();
 
-	void logEnergies(vector<Atom> &vAtoms, vector2d &vvdDistances, double dBoxSize, ParamsLJ& sParams, bool bPrint = false);
-	void logPositions(vector<Atom> &vAtoms);
+	void logEnergies(double dKinetic, double dPotential, bool bPrint = false);
+	void logPositions(const vector<Atom> &vAtoms);
 
 private:
 	std::ofstream m_EnergyOutput;

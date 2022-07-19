@@ -22,7 +22,6 @@ double calculateLJ(double dDist, const ParamsLJ &sParams)
 double getPeriodicDist(const Atom &cFirst, const Atom &cSecond, double dBoxSize)
 {
 	double dSquareSum = 0.0f;
-	static double dLimit = dBoxSize / 2;
 
 	const auto &aFirstPos = cFirst.getPos();
 	const auto &aSecondPos = cSecond.getPos();
@@ -30,7 +29,7 @@ double getPeriodicDist(const Atom &cFirst, const Atom &cSecond, double dBoxSize)
 	for (int nCoord = 0; nCoord < 3; ++nCoord)
 	{
 		double dDiff = std::fabs(aFirstPos[nCoord] - aSecondPos[nCoord]);
-		dSquareSum += ((dDiff < dLimit) ? (dDiff * dDiff) : (dBoxSize - dDiff) * (dBoxSize - dDiff));
+		dSquareSum += ((dDiff < dBoxSize / 2) ? (dDiff * dDiff) : (dBoxSize - dDiff) * (dBoxSize - dDiff));
 	}
 
 	return std::sqrt(dSquareSum);

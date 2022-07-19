@@ -18,6 +18,7 @@ public:
 	const array<double, 3> &getPos() const { return m_position; }
 
 	void setOldForce(double fx, double fy, double fz) { m_old_force = { fx, fy, fz }; }
+	void setOldForce(std::array<double, 3>  &old_force) { m_old_force = old_force; }
 	void resetOldForce() { m_old_force = { 0.0f, 0.0f, 0.0f }; }
 	array<double, 3>& getOldForce() { return m_old_force; }
 	void makeForceOld() { m_old_force = m_force; }
@@ -26,7 +27,7 @@ public:
 	void resetForce() { m_force = { 0.0f, 0.0f, 0.0f }; }
 	array<double, 3>& getForce() { return m_force; }
 
-	void setVelocity(std::array<double, 3>& vel) { m_velocity = vel; }
+	void setVelocity(std::array<double, 3> &vel) { m_velocity = vel; }
 	array<double, 3>& getVelocity() { return m_velocity; }
 	const array<double, 3>& getVelocity() const { return m_velocity; }
 

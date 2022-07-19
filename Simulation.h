@@ -10,7 +10,8 @@
 #include "Output.h"
 
 using std::vector;
-using vectorad = vector<array<double, 3> >;
+using vectorad = vector< array<double, 3> >;
+using vector2d = vector< vector<double> >;
 
 class Simulation
 {
@@ -19,9 +20,9 @@ public:
 	Simulation(InputParams& sInput);
 	~Simulation();
 
-	double getTimeStep() { return m_dTimeStep; }
-	double getBoxSize() { return m_dBoxSize; }
-	int getMaxSteps() { return m_nMaxSteps; }
+	double getTimeStep() const { return m_dTimeStep; }
+	double getBoxSize() const { return m_dBoxSize; }
+	int getMaxSteps() const { return m_nMaxSteps; }
 
 	void generateRandomPositions(double dLimit = 0.2);
 	void generateVelocities();
@@ -34,19 +35,34 @@ public:
 	void updateForces();
 	void correctPositions();
 
-	void logEnergies(bool bPrint = false) { m_Output.logEnergies(m_vAtoms, m_dBoxSize, m_LJPar, bPrint); }
+	void logEnergies(bool bPrint = false) { m_Output.logEnergies(m_dKineticE, m_dPotentialE, bPrint); }
 	void logPositions() { m_Output.logPositions(m_vAtoms); }
 
 	void advanceTime() { m_nStep += 1; m_dTime += m_dTimeStep; }
-	bool isFinished() { return m_nStep > m_nMaxSteps; }
+	bool isFinished() const { return m_nStep > m_nMaxSteps; }
+	int getStep() const { return m_nStep; }
 
-	void setTime(double dTime) { m_dTime = dTime; }
-	void setStep(int nStep) { m_nStep = nStep; }
-	int getStep() { return m_nStep; }
+	void updateDistances();
+
+	void calculateEnergies();
+	double getPotentialE() { return m_dPotentialE; }
+	double getKineticE() { return m_dKineticE; }
+	double getTotalE() { return m_dPotentialE + m_dKineticE; }
 
 private:
+	// Vector of all the atoms
 	vector<Atom> m_vAtoms{};
+	
+	// Vector of distances between all the atoms
+	vector2d m_vvdDistances{};
 
+	// Vectors and doubles to hold potential and kinetic energy
+	vector<double> m_vdPotentialE{};
+	vector<double> m_vdKineticE{};
+	double m_dPotentialE{ 0.0f };
+	double m_dKineticE{ 0.0f };
+
+	// A class responsible for file output
 	Output m_Output;
 
 	// Simulation parameters
@@ -60,7 +76,7 @@ private:
 	double m_dMass{ 39.9623831225f };  // Atomic mass units (Argon-40)
 	ParamsLJ m_LJPar{};  // All the Lennard-Jones parameters
 
-	// Current state of simulation
+	// Current state of the simulation
 	double m_dTime{ 0.0f };  // ps
 	int m_nStep{ 1 };
 
@@ -69,6 +85,18 @@ private:
 	std::mt19937 m_Mersenne{};
 
 	// Private functions, not to be called from outside
+	// PRNG related
 	void initialisePRNG();
 	double getRand();
+
+	// Initialisation of the Simulation object
+	void initialiseDistances();
+	void copyForcesToOld();
+	void resetForces();
+	void initialiseDistancesAndForces();
+	void initialiseEnergyVectors();
+
+	// Energy calculation
+	void calculatePotentialE();
+	void calculateKineticE();
 };

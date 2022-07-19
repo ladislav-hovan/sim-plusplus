@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <array>
+#include <cstring>
 
 #include "input.h"
 #include "params.h"

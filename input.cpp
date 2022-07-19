@@ -14,7 +14,7 @@ bool isEmpty(string &strInput)
 	return true;
 }
 
-string trimWhitespace(string &strInput)
+string trimWhitespace(const string &strInput)
 {
 	size_t nFirst = strInput.find_first_not_of(" \t");
 	size_t nSecond = strInput.find_last_not_of(" \t");
@@ -24,7 +24,7 @@ string trimWhitespace(string &strInput)
 	return strOutput;
 }
 
-void assignInput(string &strLine, InputParams &sParams)
+void assignInput(const string &strLine, InputParams &sParams)
 {
 	string strFirstInput, strSecondInput;
 

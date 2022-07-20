@@ -29,14 +29,14 @@ int main(int argc, char* argv[])
 	// Remove center of mass motion
 	Simulation.removeTranslation(true);
 
-	// Start the timer for program run
-	clock_t cTime = std::clock();
-
 	// Report on everything at step zero
 	Simulation.reportStep();
 	Simulation.logPositions();
 	Simulation.calculateEnergies();
 	Simulation.logEnergies(true);
+
+	// Start the timer for the integration loop
+	clock_t cTime = std::clock();
 
 	// Main integration loop (Velocity Verlet)
 	// The initial time and step are set by the Simulation constructor

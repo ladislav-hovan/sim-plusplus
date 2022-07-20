@@ -17,8 +17,8 @@ class Simulation
 {
 public:
 	Simulation() = delete;
-	Simulation(InputParams& sInput);
-	~Simulation();
+	Simulation(const InputParams& sInput);
+	~Simulation() = default;
 
 	double getTimeStep() const { return m_dTimeStep; }
 	double getBoxSize() const { return m_dBoxSize; }
@@ -39,7 +39,7 @@ public:
 	void logPositions() { m_Output.logPositions(m_vAtoms); }
 
 	void advanceTime() { m_nStep += 1; m_dTime += m_dTimeStep; }
-	bool isFinished() const { return m_nStep > m_nMaxSteps; }
+	bool isFinished() const { return m_nStep >= m_nMaxSteps; }
 	int getStep() const { return m_nStep; }
 
 	void updateDistances();
@@ -48,6 +48,8 @@ public:
 	double getPotentialE() { return m_dPotentialE; }
 	double getKineticE() { return m_dKineticE; }
 	double getTotalE() { return m_dPotentialE + m_dKineticE; }
+
+	void reportStep() { std::cout << "Step " << m_nStep << "\n"; }
 
 private:
 	// Vector of all the atoms
@@ -78,7 +80,7 @@ private:
 
 	// Current state of the simulation
 	double m_dTime{ 0.0f };  // ps
-	int m_nStep{ 1 };
+	int m_nStep{ 0 };
 
 	// PRNG
 	int m_nSeed{ -1 };

@@ -2,49 +2,50 @@
 
 int main(int argc, char* argv[])
 {
-	// TODO: Create an Input object, with the ability to check input parameters
-	// Simulation parameters
-	InputParams sInput;
+	// Class for dealing with the input
+	Input sInput;
 	// Read from a parameter file if provided on the command line, else use defaults
 	if (argc > 1)
-		sInput = readParameters(argv[1]);
-	
-	// Check the parameters for consistency
-	if (sInput.dBoxSize <= 2 * sInput.lj_par.cutoff)
-	{
-		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
-		exit (1);
-	}
+		sInput.readParameters(argv[1]);
 
+	// Check the input parameters for consistency
+	sInput.checkValues();
+	
 	// Creating simulation object
-	Simulation Simulation(sInput);
+	Simulation Simulation(sInput.getParams());
 
 	// Place atoms randomly in the initial box or load initial positions from a file if provided
-	if (sInput.strPosInputFile.empty())
+	if (sInput.getParams().strPosInputFile.empty())
 		Simulation.generateRandomPositions();
 	else
-		Simulation.loadPositions(sInput.strPosInputFile);
+		Simulation.loadPositions(sInput.getParams().strPosInputFile);
 
 	// Generate initial velocities or load them from a file if provided
-	if (sInput.strVelInputFile.empty())
+	if (sInput.getParams().strVelInputFile.empty())
 		Simulation.generateVelocities();
 	else
-		Simulation.loadVelocities(sInput.strVelInputFile);
+		Simulation.loadVelocities(sInput.getParams().strVelInputFile);
 
 	// Remove center of mass motion
 	Simulation.removeTranslation(true);
 
-	// Start the timer for program run
-	clock_t cTime = std::clock();
+	// Report on everything at step zero
+	Simulation.reportStep();
+	Simulation.logPositions();
+	Simulation.calculateEnergies();
+	Simulation.logEnergies(true);
 
-	// TODO: Report properly on step zero
+	// Start the timer for the integration loop
+	clock_t cTime = std::clock();
 
 	// Main integration loop (Velocity Verlet)
 	// The initial time and step are set by the Simulation constructor
-	for (; !Simulation.isFinished(); Simulation.advanceTime())
+	do
 	{
+		Simulation.advanceTime();
+
 		if (Simulation.getStep() % 1000 == 0)
-			std::cout << "Step " << Simulation.getStep() << "\n";
+			Simulation.reportStep();
 
 		if (Simulation.getStep() % 100 == 0)
 			Simulation.logPositions();
@@ -65,7 +66,8 @@ int main(int argc, char* argv[])
 			Simulation.calculateEnergies();
 			Simulation.logEnergies(Simulation.getStep() % 1000 == 0);
 		}
-	}
+	} 
+	while (!Simulation.isFinished());
 
 	// Report on time spent
 	cTime = std::clock() - cTime;

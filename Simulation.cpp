@@ -1,14 +1,10 @@
 #include "Simulation.h"
 
-Simulation::Simulation(InputParams& sInput): m_dTimeStep{sInput.dTimeStep}, m_dBoxSize{sInput.dBoxSize}, m_nSeed{sInput.nSeed}, m_nMaxSteps{sInput.nSteps}, m_nAtoms{sInput.nAtoms},
-											 m_dMass{sInput.dMass}, m_dTemp{sInput.dTemp}, m_LJPar{sInput.lj_par}, m_Output{sInput.strEnergyFile, sInput.strPositionFile},
-											 m_nStep{sInput.nInitialStep}, m_dTime{sInput.dInitialTime}
+Simulation::Simulation(const InputParams& sInput): m_dTimeStep{sInput.dTimeStep}, m_dBoxSize{sInput.dBoxSize}, m_nSeed{sInput.nSeed}, m_nMaxSteps{sInput.nSteps}, m_nAtoms{sInput.nAtoms},
+												   m_dMass{sInput.dMass}, m_dTemp{sInput.dTemp}, m_LJPar{sInput.lj_par}, m_Output{sInput.strEnergyFile, sInput.strPositionFile},
+												   m_nStep{sInput.nInitialStep}, m_dTime{sInput.dInitialTime}
 {
 	initialisePRNG();
-}
-
-Simulation::~Simulation()
-{
 }
 
 void Simulation::initialisePRNG()
@@ -111,6 +107,7 @@ void Simulation::removeTranslation(bool bReport)
 	if (bReport)
 	{
 		std::cout << "Initial momentum vector:\n";
+		std::cout << std::fixed << std::setprecision(4);
 		std::cout << a_dMomentum[0] << " " << a_dMomentum[1] << " " << a_dMomentum[2] << "\n";
 	}
 
@@ -124,6 +121,7 @@ void Simulation::removeTranslation(bool bReport)
 	{
 		a_dMomentum = getTotalMomentum(m_vAtoms);
 		std::cout << "\nMomentum vector after CoM motion removal:\n";
+		std::cout << std::fixed << std::setprecision(4);
 		std::cout << a_dMomentum[0] << " " << a_dMomentum[1] << " " << a_dMomentum[2] << "\n\n";
 	}
 }

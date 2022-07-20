@@ -12,6 +12,7 @@
 using std::vector;
 using vectorad = vector< array<double, 3> >;
 using vector2d = vector< vector<double> >;
+using array2d = array< array<double, 3>, 3 >;
 
 class Simulation
 {
@@ -57,6 +58,9 @@ private:
 	
 	// Vector of distances between all the atoms
 	vector2d m_vvdDistances{};
+
+	// Box vectors
+	array2d m_aadBoxVectors{};
 
 	// Vectors and doubles to hold potential and kinetic energy
 	vector<double> m_vdPotentialE{};

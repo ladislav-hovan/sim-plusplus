@@ -73,5 +73,5 @@ int main(int argc, char* argv[])
 	cTime = std::clock() - cTime;
 	std::cout << "\nTotal run time of the integration loop: " << double(cTime) / CLOCKS_PER_SEC << "s\n";
 
-	return 0;
+	return error::noError;
 }

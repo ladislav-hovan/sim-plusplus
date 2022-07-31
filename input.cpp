@@ -33,7 +33,7 @@ vectorad readValuesFromFile(const string& strFile)
 	if (!InputStream)
 	{
 		std::cerr << "Couldn't open file " << strFile << std::endl;
-		exit(2);
+		exit(error::fileNotFound);
 	}
 
 	while (InputStream)
@@ -67,7 +67,7 @@ void Input::assignInput(const string& strLine)
 	{
 		std::cerr << "The following line doesn't contain any assignment:" << std::endl;
 		std::cerr << strLine << std::endl;
-		exit(3);
+		exit(error::noAssignment);
 	}
 	else
 	{
@@ -105,7 +105,7 @@ void Input::readParameters(const string& strFilename)
 	if (!InputStream)
 	{
 		std::cerr << "Couldn't open file " << strFilename << std::endl;
-		exit(2);
+		exit(error::fileNotFound);
 	}
 
 	while (InputStream)
@@ -132,6 +132,6 @@ void Input::checkValues()
 	if (m_sParams.dBoxSize <= 2 * m_sParams.lj_par.cutoff)
 	{
 		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
-		exit(1);
+		exit(error::invalidInput);
 	}
 }

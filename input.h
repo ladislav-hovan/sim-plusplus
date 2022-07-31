@@ -9,6 +9,7 @@
 #include <cstring>
 
 #include "params.h"
+#include "error_codes.h"
 
 using std::vector;
 using std::array;

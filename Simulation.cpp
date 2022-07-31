@@ -86,7 +86,7 @@ void Simulation::loadVelocities(const string& strVelFile)
 	if (vadValues.size() != m_nAtoms)
 	{
 		std::cerr << "The length of the list of velocities doesn't match the number of atoms" << std::endl;
-		exit(4);
+		exit(error::inputLengthMismatch);
 	}
 
 	for (int nCount = 0; nCount < m_nAtoms; ++nCount)

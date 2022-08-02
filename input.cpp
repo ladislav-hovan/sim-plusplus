@@ -24,6 +24,33 @@ string trimWhitespace(const string &strInput)
 	return strOutput;
 }
 
+vector<double> separateStringDoubles(const string &strSequence)
+{
+	vector<double> vdSequence;
+	string strMember;
+	int nCount = 0;
+
+	while (strSequence[nCount])
+	{
+		if (!strncmp(&strSequence[nCount], ",", 1))
+		{
+			double dMember = std::stod(strMember);
+			vdSequence.push_back(dMember);
+			strMember.clear();
+		}
+		else
+			strMember += strSequence[nCount];
+
+		++nCount;
+	}
+
+	double dMember = std::stod(strMember);
+	vdSequence.push_back(dMember);
+	strMember.clear();
+
+	return vdSequence;
+}
+
 vectorad readValuesFromFile(const string& strFile)
 {
 	vectorad vadValues;
@@ -80,6 +107,7 @@ void Input::assignInput(const string& strLine)
 	if (!strFirstInput.compare("PositionFile"))			m_sParams.strPositionFile = strSecondInput;
 	if (!strFirstInput.compare("PosInputFile"))			m_sParams.strPosInputFile = strSecondInput;
 	if (!strFirstInput.compare("VelInputFile"))			m_sParams.strVelInputFile = strSecondInput;
+	if (!strFirstInput.compare("BoxType"))				m_sParams.strBoxType = strSecondInput;
 
 	// Assigning integers
 	if (!strFirstInput.compare("Seed"))					m_sParams.nSeed = std::stoi(strSecondInput);
@@ -96,6 +124,9 @@ void Input::assignInput(const string& strLine)
 	if (!strFirstInput.compare("Mass"))					m_sParams.dMass = std::stod(strSecondInput);
 	if (!strFirstInput.compare("TimeStep"))				m_sParams.dTimeStep = std::stod(strSecondInput);
 	if (!strFirstInput.compare("InitialTime"))			m_sParams.dInitialTime = std::stod(strSecondInput);
+
+	// Assigning vectors of doubles
+	if (!strFirstInput.compare("BoxVectors"))			m_sParams.vdBoxVectors = separateStringDoubles(strSecondInput);
 }
 
 void Input::readParameters(const string& strFilename)
@@ -129,9 +160,67 @@ void Input::readParameters(const string& strFilename)
 void Input::checkValues()
 {
 	// Check the parameters for consistency
-	if (m_sParams.dBoxSize <= 2 * m_sParams.lj_par.cutoff)
+	if ((m_sParams.vdBoxVectors.size() > 0) && (m_sParams.dBoxSize > 0.0))
 	{
-		std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
+		std::cerr << "Both box vectors and box size were specified in the input file\n";
 		exit(error::invalidInput);
+	}
+
+	if ((m_sParams.vdBoxVectors.size() > 0) && (!m_sParams.strBoxType.compare("cubic")))
+	{
+		std::cerr << "Box vectors instead of box size are being specified for a cubic box\n";
+		exit(error::invalidInput);
+	}
+
+	if (m_sParams.vdBoxVectors.size() == 9)
+	{
+		// The first three correspond to v1(x), v2(y) and v3(z)
+
+		// TODO: Implement vector rotation to make sure v1(y) = v1(z) = v2(z) = 0
+	}
+	else if (m_sParams.vdBoxVectors.size() == 3)
+	{
+		// Fill in the other members with zero
+		while (m_sParams.vdBoxVectors.size() < 9)
+			m_sParams.vdBoxVectors.push_back(0.0f);
+	}
+	else if (m_sParams.vdBoxVectors.size() == 0)
+	{
+		if (m_sParams.dBoxSize < 0)
+		{
+			// None of them are defined, use the default value
+			if (!m_sParams.strBoxType.compare("cubic"))
+			{
+				// Box is cubic
+				m_sParams.dBoxSize = 10.0f;  // nm
+			}
+			else
+			{
+				std::cerr << "A non-cubic box was selected but no size parameters were provided\n";
+				exit(error::invalidInput);
+			}
+		}
+		else
+		{
+			if (m_sParams.strBoxType.compare("cubic"))
+			{
+				std::cerr << "A non-cubic box was selected but the box vectors were not provided\n";
+				exit(error::invalidInput);
+			}
+		}
+	}
+	else
+	{
+		std::cerr << "The length of the provided box vectors needs to be 9 or 3\n";
+		exit(error::invalidInput);
+	}
+
+	if (!m_sParams.strBoxType.compare("cubic"))
+	{
+		if (m_sParams.dBoxSize <= 2 * m_sParams.lj_par.cutoff)
+		{
+			std::cerr << "The box size needs to be bigger than twice the LJ cutoff distance\n";
+			exit(error::invalidInput);
+		}
 	}
 }

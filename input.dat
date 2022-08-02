@@ -2,3 +2,7 @@ MaxSteps = 500000
 
 PosInputFile = init_pos.dat
 VelInputFile = init_vel.dat
+
+#BoxSize = 20
+#BoxType = triclinic
+#BoxVectors = 20.0,20.0,20.0

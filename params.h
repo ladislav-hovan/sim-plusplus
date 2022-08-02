@@ -1,10 +1,15 @@
 #pragma once
 
 #include <string>
+#include <array>
+#include <vector>
 
 #include "constants.h"
 
+using std::vector;
 using std::string;
+using std::array;
+using array2d = array< array<double, 3>, 3 >;
 
 struct ParamsLJ
 {
@@ -20,8 +25,10 @@ struct InputParams
 	ParamsLJ lj_par;
 
 	// Initial conditions for box and atoms
-	// TODO: Add support for non-square boxes
-	double dBoxSize = 10.0f;  // Length of the side of the simulation box, in nm
+	// TODO: Create enum class for box types
+	string strBoxType = "cubic";  // Box type, currently cubic or triclinic supported
+	vector<double> vdBoxVectors{};  // Box vectors, read from file or constructed from input
+	double dBoxSize = -1.0f;  // Length of the side of the simulation box if cubic, in nm
 	int nAtoms = 100;
 	double dMass = 39.9623831225f;  // Atomic mass units (Argon-40)
 
